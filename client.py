@@ -58,15 +58,15 @@ def cleanup(mods_dir, mod_dir):
 
 
 def update_from_server(host, mods_dir, port=21026):
-    print("Getting mod list...")
+    print("Getting mod list...\n")
     modsinfo = get_server_mod_info(host, port)
 
-    print("Comparing mods...")
+    print("Comparing mods...\n")
     d = compare(modsinfo, mods_dir)
 
     if len(d[0]):
         print("Found:")
-        print("  " + ", ".join([x['modinfo']['name'] for x in d[0]]))
+        print("  - [%s]" % "]\n  - [".join([x['modinfo']['name'] for x in d[0]]))
 
     if len(d[1]):
         print("Missing:")
@@ -76,21 +76,40 @@ def update_from_server(host, mods_dir, port=21026):
         print("Conflicting:")
         print("  " + ", ".join([x['modinfo']['name'] for x in d[2]]))
 
-    confirm = input("Would you like to synchronise your mods now? [y/N]")
-    if confirm.strip() != 'y':
-        return
+    print()
 
-    print("Removing conflicting mods...")
-    for mod in d[2]:
-        cleanup(mods_dir, mod['dir'])
-        print("Removed %s" % mod['dir'])
+    if len(d[1]) + len(d[2]) > 0:
+        confirm = input("Would you like to synchronise your mods now? [y/N]")
+        if confirm.strip() != 'y':
+            return
+    
+        print("Removing conflicting mods...")
+        for mod in d[2]:
+            cleanup(mods_dir, mod['dir'])
+            print("Removed %s" % mod['dir'])
+    
+        print("Updating conflicting mods...")
+        for mod in d[2]:
+            install(mod['modinfo']['name'], mods_dir, host, port)
+            print("Installed [%s]." % mod['modinfo']['name'])
+    
+        print("Installing missing mods...")
+        for mod in d[1]:
+            install(mod['modinfo']['name'], mods_dir, host, port)
+            print("Installed [%s]." % mod['modinfo']['name'])
+    else:
+        print("No updates required.\n")
 
-    print("Updating conflicting mods...")
-    for mod in d[2]:
-        install(mod['modinfo']['name'], mods_dir, host, port)
-        print("Installed [%s]." % mod['modinfo']['name'])
+    input("Done! Press Enter to exit.")
 
-    print("Installing missing mods...")
-    for mod in d[1]:
-        install(mod['modinfo']['name'], mods_dir, host, port)
-        print("Installed [%s]." % mod['modinfo']['name'])
+if __name__ == "__main__":
+    p = argparse.ArgumentParser()
+    p.add_argument('--mods', '-m', type=str, help='mod directory')
+    p.add_argument('host', type=str, help='hostname')
+    p.add_argument('--port', '-p', type=int, help='port (dflt: 21026)', default=21026)
+
+    args = p.parse_args()
+    update_from_server(args.host, args.mods, args.port)
+
+
+
