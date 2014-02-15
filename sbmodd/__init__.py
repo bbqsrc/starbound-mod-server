@@ -15,6 +15,7 @@ def md5sum_directory(dir):
     m = hashlib.md5()
     for o in os.walk(dir):
         for fn in o[2]:
+            if fn.startswith('.'): continue
             with open(os.path.join(o[0], fn), 'rb') as f:
                 m.update(f.read())
 

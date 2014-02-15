@@ -3,6 +3,7 @@ import tornado.ioloop
 import json
 import logging
 import tarfile
+import os
 
 from io import BytesIO
 from tornado.web import RequestHandler
