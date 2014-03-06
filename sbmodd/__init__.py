@@ -3,7 +3,7 @@ import os
 import glob
 import os.path
 import json
-#import logging
+import logging
 
 
 def md5(data):
@@ -35,7 +35,7 @@ def get_mod_dirs(mod_dir, checksum=False):
             d = os.path.join(mod_dir, d)
             modinfo = glob.glob(os.path.join(d, "*.modinfo"))
             #logging.debug(modinfo)
-            if len(modinfo) == 1:
+            if len(modinfo) > 0:
                 x = {
                     "dir": os.path.basename(d),
                     "modinfo": json.load(open(modinfo[0]))
