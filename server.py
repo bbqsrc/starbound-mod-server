@@ -4,6 +4,7 @@ import json
 import logging
 import tarfile
 import os
+import os.path
 
 from io import BytesIO
 from tornado.web import RequestHandler
@@ -34,12 +35,17 @@ class GetMod(RequestHandler):
         mod_dir = o[0]
         os.chdir(options.mods)
 
+
         out = BytesIO()
         tar = tarfile.open(mode='w:xz', fileobj=out)
-        for o in os.walk(mod_dir):
-            logging.debug(o)
-            for fn in o[2]:
-                tar.add(os.path.join(o[0], fn))
+
+        if not os.path.isdir(mod_dir):
+            tar.add(mod_dir)
+        else:
+            for o in os.walk(mod_dir):
+                logging.debug(o)
+                for fn in o[2]:
+                    tar.add(os.path.join(o[0], fn))
         tar.close()
 
         self.write(out.getvalue())
