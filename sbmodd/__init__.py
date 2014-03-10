@@ -9,7 +9,7 @@ import logging
 def md5(data):
     m = hashlib.md5()
     m.update(data)
-
+    return m.hexdigest()
 
 def md5sum_directory(dir):
     m = hashlib.md5()
@@ -36,7 +36,7 @@ def get_mod_dirs(mod_dir, checksum=False):
 
             if d.endswith('.modpak'):
                 with open(d, 'rb') as f:
-                    chksum = md5(f.read()).hexdigest()
+                    chksum = md5(f.read())
                     o.append({
                         "dir": os.path.basename(d),
                         "modinfo": { "name": os.path.basename(d) },
