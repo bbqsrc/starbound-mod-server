@@ -24,7 +24,7 @@ def md5sum_directory(dir):
 
 def get_subdirs(dir):
     return [name for name in os.listdir(dir)
-            if os.path.isdir(os.path.join(dir, name))]
+            if os.path.isdir(os.path.join(dir, name)) or name.endswith('.modpak')]
 
 
 def get_mod_dirs(mod_dir, checksum=False):
@@ -33,6 +33,16 @@ def get_mod_dirs(mod_dir, checksum=False):
         #logging.debug(subdirs)
         for d in subdirs:
             d = os.path.join(mod_dir, d)
+
+            if d.endswith('.modinfo'):
+                with open(d, 'rb') as f:
+                    chksum = md5(f.read()).hexdigest()
+                    o.append({
+                        "dir": os.path.basename(d),
+                        "modinfo": { "name": os.path.basename(d) },
+                        "md5sum": chksum
+                    })
+
             modinfo = glob.glob(os.path.join(d, "*.modinfo"))
             #logging.debug(modinfo)
             if len(modinfo) > 0:
