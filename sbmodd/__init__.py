@@ -34,7 +34,7 @@ def get_mod_dirs(mod_dir, checksum=False):
         for d in subdirs:
             d = os.path.join(mod_dir, d)
 
-            if d.endswith('.modinfo'):
+            if d.endswith('.modpak'):
                 with open(d, 'rb') as f:
                     chksum = md5(f.read()).hexdigest()
                     o.append({
@@ -42,6 +42,7 @@ def get_mod_dirs(mod_dir, checksum=False):
                         "modinfo": { "name": os.path.basename(d) },
                         "md5sum": chksum
                     })
+                    continue
 
             modinfo = glob.glob(os.path.join(d, "*.modinfo"))
             #logging.debug(modinfo)
